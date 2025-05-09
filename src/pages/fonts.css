@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+.supplementary-font {
+  font-family: 'Euclid Circular B', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tertiary-text {
+  font-family: 'Montserrat', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sub-text-regular {
+  /* font-family: 'Montserrat', sans-serif; */
+  /* font-family: 'Josefin Sans', sans-serif; */
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.sub-text-medium {
+  /* font-family: 'Montserrat', sans-serif; */
+  /* font-family: 'Josefin Sans', sans-serif; */
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.sub-text-semibold {
+  /* font-family: 'Montserrat', sans-serif; */
+  /* font-family: 'Josefin Sans', sans-serif; */
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.sub-text-bold {
+  /* font-family: 'Montserrat', sans-serif; */
+  /* font-family: 'Josefin Sans', sans-serif; */
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.sub-text-extrabold {
+  /* font-family: 'Montserrat', sans-serif; */
+  /* font-family: 'Josefin Sans', sans-serif; */
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.heading-text-regular {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-medium {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-semibold {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-bold {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-extrabold {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-bold {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+.heading-text-bold {
+  /* font-family: 'Gilda Display', sans-serif; */
+  font-family: 'Josefin Sans', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: 'slnt' 0;
+}
+
+@font-face {
+  font-family: 'Myriad Pro';
+  src: url('../fonts/MYRIADPRO-REGULAR.OTF');
+  font-style: normal;
+}
