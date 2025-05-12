@@ -69,7 +69,8 @@ const AssetInfoWrapper = ({
         mx="auto"
         maxW="1259.66px"
         h={`max-content`}
-        maxH={`70vh`}
+        // maxH={`80vh`}
+        pt={{base: '0px', xl: '23px'}}
         {...rest}
       >
         {children}

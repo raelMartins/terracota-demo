@@ -162,7 +162,6 @@ const PaymentPlan = () => {
                 maxW="1305px"
                 justifySelf="stretch"
                 w={{base: 'full', xl: 'full'}}
-                pt={{base: '0px', xl: '23px'}}
                 displayTab={displayTab}
                 handleDisplaySwitch={handleDisplaySwitch}
                 useTabs
