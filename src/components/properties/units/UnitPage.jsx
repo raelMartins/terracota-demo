@@ -48,7 +48,15 @@ export const UnitPage = ({openAuth}) => {
   return (
     <>
       <Mobile openAuth={openAuth} />
-      <LayoutView openAuth={openAuth} display={{base: 'none', lg: 'flex'}}>
+      <LayoutView
+        openAuth={openAuth}
+        display={{base: 'none', lg: 'flex'}}
+        metaData={{
+          title: unitData?.unit_title,
+          description: unitData?.unit_description,
+          image: slideImages?.[0],
+        }}
+      >
         {isLoading ? (
           <Center minH={`70vh`}>
             <Spinner noAbsolute />

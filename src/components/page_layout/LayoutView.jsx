@@ -7,6 +7,8 @@ import {Footer} from './footer';
 import {fullScreenAuth, SUBSCRIPTION_DECLINED} from '../../constants/routes';
 import useGetSession from '@/utils/hooks/getSession';
 import {FullScreenPreRequisites} from '../fullScreenPrerequisites/FullScreenPrerequisites';
+import Head from 'next/head';
+import {capitalizeString} from '@/utils/misc';
 
 export const LayoutView = ({
   children,
@@ -17,9 +19,11 @@ export const LayoutView = ({
   noNavbar,
   fixedFooter,
   openAuth,
+  metaData = {title: ``, image: ``, description: ``},
   ...rest
 }) => {
   const {sessionData: LoggedinUser} = useGetSession('loggedIn');
+  const {sessionData: store_data} = useGetSession('store_data');
 
   const router = useRouter();
   const theme = useTheme();
@@ -62,47 +66,101 @@ export const LayoutView = ({
     }
   }, []);
   return (
-    <FullScreenPreRequisites>
-      <Stack
-        bg="background"
-        h={'100%'}
-        w={`100%`}
-        maxW={`1600px`}
-        mx={`auto`}
-        minH="100vh"
-        minInlineSize={'fit-content'}
-        justify="space-between"
-        color={`text`}
-        gap={`0px`}
-        pb={`40px`}
-        position={`relative`}
-        {...rest}
-      >
-        {!noNavbar && (
-          <Navbar navBarStyle={navBarStyle} activePage={activePage} handleGetStarted={openAuth} />
+    <>
+      <Head>
+        {/* Basic */}
+        {metaData?.title && (
+          <title>{capitalizeString(`${metaData?.title} | ${store_data?.store_name}`)}</title>
         )}
-        <Box
-          flex={1}
-          h="full"
-          w={'100%'}
-          px={noPadding ? '0' : {base: '20px', lg: '100px'}}
-          pb={{base: '50px', xl: '51.5px'}}
-          mt={`0px !important `}
-        >
-          {children}
-        </Box>
-        {isAuthPage ? null : <SupportMenu isOpen={isOpen} onClose={onClose} onOpen={onOpen} />}
-        {!noFooter && (
-          <Footer
-            position={(fullScreenAuth && !LoggedinUser) || fixedFooter ? `fixed` : `absolute`}
-            bottom={`0px`}
-            left={`0px`}
-            width={`100%`}
-            zIndex={LoggedinUser ? `1` : `2000`}
+        {metaData?.description && <meta name="description" content={metaData?.description} />}
+
+        {/* Open Graph Meta Tags */}
+        {metaData?.title && (
+          <meta
+            property="og:title"
+            content={capitalizeString(`${metaData?.title} | ${store_data?.store_name}`)}
           />
         )}
-      </Stack>
-    </FullScreenPreRequisites>
+        {metaData?.description && (
+          <meta property="og:description" content={metaData?.description} />
+        )}
+        <meta
+          property="og:image"
+          content={
+            metaData?.image?.photo ||
+            metaData?.image?.original ||
+            metaData?.image ||
+            store_data?.company_image
+          }
+        />
+        <meta property="og:site_name" content={store_data?.store_name} />
+
+        {/* Twitter Meta Tags */}
+        {metaData?.title && (
+          <meta
+            name="twitter:title"
+            content={capitalizeString(`${metaData?.title} | ${store_data?.store_name}`)}
+          />
+        )}
+        {metaData?.description && (
+          <meta name="twitter:description" content={metaData?.description} />
+        )}
+        <meta
+          name="twitter:image"
+          content={
+            metaData?.image?.photo ||
+            metaData?.image?.photo?.[0] ||
+            metaData?.image?.original ||
+            metaData?.image ||
+            store_data?.company_image
+          }
+        />
+        <meta name="twitter:image:alt" content={`Image of ${store_data?.store_name}`} />
+        <meta name="twitter:site" content={`@${store_data?.store_name}`} />
+        <meta name="twitter:card" content={'summary_large_image'} />
+      </Head>
+      <FullScreenPreRequisites>
+        <Stack
+          bg="background"
+          h={'100%'}
+          w={`100%`}
+          maxW={`1600px`}
+          mx={`auto`}
+          minH="100vh"
+          minInlineSize={'fit-content'}
+          justify="space-between"
+          color={`text`}
+          gap={`0px`}
+          pb={`40px`}
+          position={`relative`}
+          {...rest}
+        >
+          {!noNavbar && (
+            <Navbar navBarStyle={navBarStyle} activePage={activePage} handleGetStarted={openAuth} />
+          )}
+          <Box
+            flex={1}
+            h="full"
+            w={'100%'}
+            px={noPadding ? '0' : {base: '20px', lg: '100px'}}
+            pb={{base: '50px', xl: '51.5px'}}
+            mt={`0px !important `}
+          >
+            {children}
+          </Box>
+          {isAuthPage ? null : <SupportMenu isOpen={isOpen} onClose={onClose} onOpen={onOpen} />}
+          {!noFooter && (
+            <Footer
+              position={(fullScreenAuth && !LoggedinUser) || fixedFooter ? `fixed` : `absolute`}
+              bottom={`0px`}
+              left={`0px`}
+              width={`100%`}
+              zIndex={LoggedinUser ? `1` : `2000`}
+            />
+          )}
+        </Stack>
+      </FullScreenPreRequisites>
+    </>
   );
 };
 

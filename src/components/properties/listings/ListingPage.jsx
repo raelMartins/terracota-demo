@@ -46,7 +46,11 @@ export const ListingPage = ({openAuth}) => {
   return (
     <>
       <Mobile openAuth={openAuth} />
-      <LayoutView openAuth={openAuth} display={{base: 'none', lg: 'flex'}}>
+      <LayoutView
+        openAuth={openAuth}
+        display={{base: 'none', lg: 'flex'}}
+        metaData={{title: info?.name, description: info?.description, image: slideImages?.[0]}}
+      >
         {isLoading ? (
           <Center minH={`70vh`}>
             <Spinner noAbsolute />
