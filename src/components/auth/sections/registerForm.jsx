@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, Flex, Stack, Text, useToast} from '@chakra-ui/react';
-import {Button, Checkbox2, FormInput, PhoneInput, TitleInput} from '@/ui-lib/ui-lib.components';
+import {Button, Checkbox2, FormInput, PhoneInput, TitleInput} from '@/ui-lib';
 import {themeStyles} from '@/theme';
 import {useMutation, useQuery} from 'react-query';
 import {AttemptLogin, registerUser, storeDetails} from '@/api/auth';
@@ -9,9 +9,10 @@ import {useRouter} from 'next/router';
 import {store_name} from '@/constants/routes';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
+import {setSession} from '@/utils/sessionmanagers';
+import {getSettingsData} from '@/api/Settings';
 
 const formSchema = Yup.object().shape({
-  // account_type: Yup.string().required('Please select an account type'),
   first_name: Yup.string().required('Please enter your First Name'),
   last_name: Yup.string().required('Please enter your Last Name'),
   phone: Yup.string()
@@ -24,7 +25,7 @@ const formSchema = Yup.object().shape({
     .required('Please enter a valid phone number'),
 });
 
-const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
+const RegisterForm = ({email, setPage, setEmail, otpLogin, ...rest}) => {
   const STOREINFO = useQuery(['storeInfo'], storeDetails);
   const store_data = STOREINFO.data?.data?.data;
 
@@ -36,6 +37,39 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
   const {ref_id} = router.query;
   const [ischecked, setChecked] = useState(false);
   const [countryCode, setCountryCode] = useState('+234');
+  const [token, setToken] = useState('');
+
+  const profileQuery = useQuery(
+    ['getSettingsData', token, otpLogin],
+    () => getSettingsData({profile: true}),
+    {
+      onSuccess: res => {
+        console.log({res});
+
+        const user_data = res.data?.data;
+
+        const obj = {
+          avatar: user_data?.avatar,
+          first_name: user_data?.first_name,
+          middle_name: user_data?.middle_name,
+          last_name: user_data?.last_name,
+          id: user_data?.id,
+          email: user_data?.email,
+          date_of_birth: user_data?.date_of_birth,
+          customer_ref: user_data?.customer_ref,
+          user: {id: user_data?.user?.id},
+        };
+        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        setSession(obj, 'loggedIn', expires);
+        setPage('thankYou');
+        setEmail(email);
+      },
+      onError: err => {
+        console.log(err);
+      },
+      enabled: Boolean(token) && Boolean(otpLogin),
+    }
+  );
 
   // const storeName = STORENAMEFROMDOMAIN;
   const storeName = store_name();
@@ -89,11 +123,17 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
             email: email,
             ...formData,
           };
-      return registerUser(data);
+      return registerUser(data, otpLogin);
     },
     {
       onSuccess: res => {
-        if (res?.status == 200) {
+        if (otpLogin) {
+          const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          setSession(res?.data?.token, 'token', expires);
+          setTimeout(() => {
+            setToken(res?.data?.token);
+          }, 1000);
+        } else if (res?.status == 200) {
           formik.resetForm();
           if (ref_id) {
             return loginForRegister.mutate({
@@ -124,9 +164,9 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
         toast({
           title: 'Oops ...',
           description: `${
-            res?.response?.data?.message ??
-            res?.response?.message ??
-            res?.message ??
+            err?.response?.data?.message ??
+            err?.response?.message ??
+            err?.message ??
             'Something went wrong,we are working to resolve it'
           }`,
           status: 'error',
@@ -138,29 +178,6 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
       },
     }
   );
-
-  const PHONEPREFIX = [
-    {
-      id: '1',
-      code: '+234',
-      name: 'Nigeria',
-    },
-    {
-      id: '5',
-      code: '+1',
-      name: 'Canada',
-    },
-    {
-      id: '6',
-      code: '+44',
-      name: 'United Kingdom',
-    },
-    {
-      id: '7',
-      code: '+1',
-      name: 'United States of America',
-    },
-  ];
 
   const formik = useFormik({
     initialValues: {
@@ -182,22 +199,12 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
       bg="card_bg"
       maxW="440px"
       w={{base: `100%`, lg: `440px`}}
-      // minH={'485px'}
       px={{base: `24px`, md: '40px'}}
       py="32px"
       borderRadius={'0px'}
       {...rest}
     >
       <Flex h="full" direction="column" justify={'center'} align="center" gap={`16px`}>
-        {/* <Flex direction="row" justify="space-between" alignItems={'center'} alignSelf="stretch">
-          <Box w="40px" />
-          <CloseIcon
-            alignSelf={'flex-start'}
-            fontSize={'15px'}
-            style={{color: '#667085', cursor: 'pointer'}}
-            onClick={onAuthClose}
-          />
-        </Flex> */}
         <Stack textAlign={`center`} align={`center`} gap={`8px`}>
           <Text
             color="text"
@@ -220,39 +227,6 @@ const RegisterForm = ({onAuthClose, email, setPage, setEmail, ...rest}) => {
             Enter your personal details
           </Text>
         </Stack>
-        {/* <Select
-          borderRadius={0}
-          color='text'
-          placeholder='Account Type'
-          mt='20px'
-          w='full'
-          h='44px'
-          variant='outline'
-          border={
-            formik.errors.account_type
-              ? '2px solid #E6192A !important'
-              : '1px solid #D0D5DD !important'
-          }
-          // error={formik.errors.account_type}
-          onChange={formik.handleChange('account_type')}
-          value={formik.values.account_type}
-          _focus={{ border: '1px solid #747474 !important' }}
-        >
-          <option value={'Personal'}>Personal</option>
-          <option value={'Business'}>Business</option>
-          <option value={'Corporate'}>Corporate</option>
-        </Select> */}
-        {/* {formik.errors.account_type && (
-          <Text
-            w='full'
-            textAlign={'left'}
-            color={themeStyles.color.matador__red}
-            my={'5px'}
-            fontSize={'14px'}
-          >
-            {formik.errors.account_type}
-          </Text>
-        )} */}
         <TitleInput
           px="14px"
           error={formik.errors.first_name && formik.touched.first_name}

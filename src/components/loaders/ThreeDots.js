@@ -1,12 +1,15 @@
-import {Box, Flex, keyframes, usePrefersReducedMotion} from '@chakra-ui/react';
+import {Box, Flex, usePrefersReducedMotion} from '@chakra-ui/react';
+import {keyframes} from '@emotion/react';
 import React from 'react';
-import {themeStyles} from '../../theme';
-import {useTheme} from '@emotion/react';
 
-export const ThreeDots = ({bgColor, color, width, height}) => {
+export const ThreeDots = ({
+  color = `custom_color.color_pop`,
+  width = {base: '8px', md: '8px'},
+  height = {base: '8px', md: '8px'},
+  boxSize = {base: '8px', md: '8px'},
+  circular = false,
+}) => {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const theme = useTheme();
-  const primaryColor = theme?.colors?.custom_color?.color;
 
   const keyframe_dot1 = keyframes`
   0% {
@@ -66,49 +69,22 @@ export const ThreeDots = ({bgColor, color, width, height}) => {
   const animation2 = prefersReducedMotion ? undefined : `${keyframe_dot2} infinite 1s linear`;
   const animation3 = prefersReducedMotion ? undefined : `${keyframe_dot3} infinite 1s linear`;
 
-  const styles = {
-    dot1: {
-      position: 'relative',
-      borderRadius: '5px',
-      backgroundColor: color || primaryColor,
-      display: ' inline-block',
-      margin: '0 2px',
-    },
-    dot2: {
-      borderRadius: '5px',
-      backgroundColor: color || primaryColor,
-      display: 'inline-block',
-      margin: '0 2px',
-    },
-
-    dot3: {
-      borderRadius: '5px',
-      backgroundColor: color || primaryColor,
-      display: 'inline-block',
-      margin: '0 2px',
-    },
+  const dot_style = {
+    position: 'relative',
+    bg: color,
+    display: 'inline-block',
+    height,
+    width,
+    margin: '0 2px',
+    borderRadius: circular ? `full` : '5px',
+    boxSize,
   };
 
   return (
     <Flex direction="row" align="center" justify={'center'}>
-      <Box
-        height={height || {base: '8px', md: '8px'}}
-        width={width || {base: '8px', md: '8px'}}
-        style={styles.dot1}
-        animation={animation1}
-      />
-      <Box
-        height={height || {base: '8px', md: '8px'}}
-        width={width || {base: '8px', md: '8px'}}
-        style={styles.dot2}
-        animation={animation2}
-      />
-      <Box
-        height={height || {base: '8px', md: '8px'}}
-        width={width || {base: '8px', md: '8px'}}
-        style={styles.dot3}
-        animation={animation3}
-      />
+      <Box animation={animation1} {...dot_style} />
+      <Box animation={animation2} {...dot_style} />
+      <Box animation={animation3} {...dot_style} />
     </Flex>
   );
 };

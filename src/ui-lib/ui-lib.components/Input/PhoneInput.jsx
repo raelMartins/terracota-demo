@@ -54,7 +54,10 @@ export const PhoneInput = ({
     const phonenumber = extractNumbers(val);
 
     try {
-      const parsedNumber = phoneUtil.parse(phone, formik.values.country);
+      const countryName = formik?.values?.country_name
+        ? formik?.values?.country_name
+        : MY_COUNTRY?.name;
+      const parsedNumber = phoneUtil.parse(phone, countryName);
       const isValid = phoneUtil.isValidNumber(parsedNumber);
       if (!isValid) {
         formik?.setFieldError('phone', 'Please enter a valid phone number');

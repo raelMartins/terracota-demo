@@ -6,6 +6,7 @@ const excludedPaths = [
   '/auth',
   '/inspection-feedback',
   '/listing-details',
+  '/purchase',
 ];
 
 export function middleware(request) {

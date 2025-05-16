@@ -1,18 +1,14 @@
 import React, {useState} from 'react';
-import {Flex, VStack, Text, useToast, Image, Box, Stack} from '@chakra-ui/react';
-import {Button, FormTextarea, Radio} from '../../../ui-lib/ui-lib.components';
-import {STORENAMEFROMDOMAIN, store_name} from '../../../constants/routes';
+import {Flex, VStack, Text, useToast, Box, Stack} from '@chakra-ui/react';
+import {Button, FormTextarea, Radio} from '@/ui-lib';
+import {store_name} from '@/constants/routes';
 import {useMutation} from 'react-query';
-import {AttemptLogin, outreach} from '../../../api/auth';
-import justLogo from '../../../images/just-logo.svg';
-import {themeStyles} from '../../../theme';
-import {CloseIcon} from '@chakra-ui/icons';
+import {AttemptLogin, outreach} from '@/api/auth';
 
-const ThankYou = ({onAuthClose, setEmail, setPage, email, ...rest}) => {
+const ThankYou = ({setEmail, setPage, email, directLogin, nextStep = () => {}, ...rest}) => {
   const toast = useToast();
   const [select, setSelect] = useState(null);
   const [other, setOther] = useState(null);
-  const isAgentorOthers = name => name === 'Others' || name === 'agent';
   const storeName = store_name();
 
   const loginForRegister = useMutation(formData => AttemptLogin(formData), {
@@ -20,9 +16,18 @@ const ThankYou = ({onAuthClose, setEmail, setPage, email, ...rest}) => {
       if (res?.response?.data?.action == 'signup') {
         formik.resetForm();
         setEmail(email);
-        setPage('successLink');
+
+        if (directLogin) {
+          nextStep();
+        } else {
+          setPage('successLink');
+        }
       } else if (res?.data?.action == 'login') {
-        setPage('successLink');
+        if (directLogin) {
+          nextStep();
+        } else {
+          setPage('successLink');
+        }
       } else {
         return toast({
           description: `${
@@ -129,7 +134,6 @@ const ThankYou = ({onAuthClose, setEmail, setPage, email, ...rest}) => {
             Thank You!
           </Text>
           <Text
-            {...themeStyles.textStyles.sl5}
             fontSize={'13px'}
             fontWeight={'300'}
             mt="0px !important"

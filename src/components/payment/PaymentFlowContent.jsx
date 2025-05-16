@@ -3,14 +3,14 @@ import {useState} from 'react';
 import {useQuery} from 'react-query';
 import BankAccountModal from './BankAccountModal';
 import ConfirmCard from './ConfirmCard';
-import {Box, Center, Flex, HStack, Image, Text, VStack} from '@chakra-ui/react';
-import {AssetPaymentWithBankSVG, DebitCardSVG, WalletCardSVG} from '../assets/svgs';
+import {Box, Center, Flex, HStack, Image, Tag, Text, VStack} from '@chakra-ui/react';
+import {AssetPaymentWithBankSVG, DebitCardSVG, WalletCardSVG} from '@/components/assets/svgs';
 import {formatToCurrency} from '@/utils';
 import {ArrowBackIcon, CloseIcon} from '@chakra-ui/icons';
 import {Button} from '@/ui-lib';
 import {useAssetPayment} from '@/ui-lib/ui-lib.hooks';
-import processingLoader from '../../images/processing-transaction.gif';
-import check_web from '../../images/done_green_check.gif';
+import processingLoader from '@/images/processing-transaction.gif';
+import check_web from '@/images/done_green_check.gif';
 import {PaymentAccess} from './PaymentAccess';
 
 export const PaymentFlowContent = ({
@@ -18,12 +18,16 @@ export const PaymentFlowContent = ({
   amountToPay,
   modal,
   paymentDetails,
+  purchaseType = `regular`,
   handleClose = () => {},
   unitData,
   asset_id,
   showTitle,
+  onSelectBankTransfer,
+  onSelectInstantBankTransfer,
 }) => {
   const [selectedCard, setSelectedCard] = useState(null);
+  const [bankTransferType, setBankTransferType] = useState(`regular`);
 
   const {
     handleBankTransfer,
@@ -47,12 +51,96 @@ export const PaymentFlowContent = ({
     asset_id: asset_id || unitData?.project?.id,
   });
 
+  // guidelines for how payment methods are handled depending
+  // on where they are to be used
+  const purchaseTypeGuidelines = {
+    regular: {
+      showChargesTag: false,
+      showConfirmationSpeedTag: false,
+      available_payment_methods: [`wallet`, `card`, `bankTransfer`],
+    },
+    direct_purchase: {
+      showChargesTag: false,
+      showConfirmationSpeedTag: true,
+      available_payment_methods: [`card`, `bankTransfer`, `instantBankTransfer`],
+    },
+  };
+
+  const guidelines = purchaseTypeGuidelines[purchaseType] || purchaseTypeGuidelines?.regular;
+
   const handlePaymentFlowClose = () => {
     setPaymentStep('index');
     handleEndTransaction();
     setSelectedCard(null);
+    setBankTransferType('regular');
     handleClose();
   };
+
+  //functions to handle each payment method
+  const click_wallet = () => {
+    handlePayFromWallet();
+  };
+
+  const click_card = () => {
+    setPaymentStep('confirmCard');
+  };
+
+  const click_bank_payment = () => {
+    setBankTransferType(`regular`);
+    onSelectBankTransfer ? onSelectBankTransfer() : null;
+    handleBankTransfer();
+  };
+
+  const click_instant_bank_payment = () => {
+    setBankTransferType(`instant`);
+    onSelectInstantBankTransfer ? onSelectInstantBankTransfer() : null;
+    handleBankTransfer();
+  };
+
+  const payment_methods = [
+    {
+      icon: <WalletCardSVG mt="5px" />,
+      type: `wallet`,
+      title: `Wallet`,
+      desciption: `Make payment from your wallet`,
+      tag: `instant`,
+      charges: false,
+      onClick: click_wallet,
+      hide: !guidelines?.available_payment_methods?.includes(`wallet`),
+    },
+    {
+      icon: <DebitCardSVG mt={`5px`} />,
+      type: `card`,
+      title: `Debit/Credit Card`,
+      desciption: `Use a debit card to complete your payment`,
+      tag: `instant`,
+      charges: true,
+      onClick: click_card,
+      hide: isAboveLimit || !guidelines?.available_payment_methods?.includes(`card`),
+    },
+
+    {
+      icon: <AssetPaymentWithBankSVG />,
+      type: `instantBankTransfer`,
+      title: `Instant Bank Transfer`,
+      desciption: `Transfer payment to a designated account`,
+      tag: `instant`,
+      charges: true,
+      onClick: click_instant_bank_payment,
+      hide: !guidelines?.available_payment_methods?.includes(`instantBankTransfer`),
+    },
+    {
+      icon: <AssetPaymentWithBankSVG />,
+      type: `bankTransfer`,
+      title: `Bank Transfer`,
+      desciption: `Transfer payment to a designated account`,
+      tag: `24h confirmation`,
+      charges: true,
+      onClick: click_bank_payment,
+      hide: !guidelines?.available_payment_methods?.includes(`bankTransfer`),
+    },
+  ];
+
   const innerContent = (
     <>
       {paymentMutation.isSuccess || depositMutation.isSuccess ? (
@@ -135,90 +223,54 @@ export const PaymentFlowContent = ({
           </Text>
 
           <VStack mt={{base: '10px', md: '14px'}} spacing={'16px'}>
-            <PaymentAccess
-              checkWallet
-              content={
-                <Flex
-                  bg="matador_background.100"
-                  border="1px solid"
-                  borderColor={'matador_border_color.100'}
-                  p="16px"
-                  cursor={'pointer'}
-                  onClick={handlePayFromWallet}
-                  w="full"
-                  pt="15px"
-                  pb="21px"
-                  gap="17px"
-                >
-                  <WalletCardSVG mt="5px" />
-                  <Flex direction={'column'} gap="6px">
-                    <HStack spacing="10px">
-                      <Text fontWeight={500} fontSize={'16px'} color="matador_text.100">
-                        Wallet
-                      </Text>
-                    </HStack>
-                    <Text fontWeight={500} color="matador_form.label" fontSize={'13px'}>
-                      Make payment from your wallet
-                    </Text>
-                  </Flex>
-                </Flex>
-              }
-            />
-
-            {!isAboveLimit && (
-              <Flex
-                bg="matador_background.100"
-                border="1px solid"
-                borderColor={'matador_border_color.100'}
-                p="16px"
-                cursor={isAboveLimit ? 'not-allowed' : 'pointer'}
-                onClick={() => setPaymentStep('confirmCard')}
-                w="full"
-                pt="15px"
-                pb="21px"
-                gap="17px"
-              >
-                <DebitCardSVG mt={`5px`} />
-
-                <Flex direction={'column'} gap="6px">
-                  <HStack spacing="10px" flexWrap={`wrap`}>
-                    <Text fontWeight={500} fontSize={'16px'} color="matador_text.100">
-                      Debit/Credit Card
-                    </Text>
-                  </HStack>
-
-                  <Text fontWeight={500} color="matador_form.label" fontSize={'13px'}>
-                    Use a debit card to complete your payment
-                  </Text>
-                </Flex>
-              </Flex>
-            )}
-
-            <Flex
-              bg="matador_background.100"
-              border="1px solid"
-              borderColor={'matador_border_color.100'}
-              p="16px"
-              cursor={'pointer'}
-              onClick={handleBankTransfer}
-              w="full"
-              pt="15px"
-              pb="21px"
-              gap="17px"
-            >
-              <AssetPaymentWithBankSVG />
-
-              <Flex direction={'column'} gap="6px">
-                <HStack spacing="10px" flexWrap={`wrap`}>
-                  <Text fontWeight={500} fontSize={'16px'} color="matador_text.100">
-                    Bank Transfer
-                  </Text>
-                </HStack>
-                <Text fontWeight={500} color="matador_form.label" fontSize={'13px'}>
-                  Transfer payment to a designated account
-                </Text>
-              </Flex>
-            </Flex>
+            {payment_methods?.map((method, i) => {
+              return method?.hide ? null : (
+                <PaymentAccess
+                  checkWallet={method?.type?.toLowerCase()?.includes(`wallet`)}
+                  checkPayment={method?.type?.toLowerCase()?.includes(`bank`) ? false : true}
+                  key={method?.type}
+                  content={
+                    <Flex
+                      bg="matador_background.100"
+                      border="1px solid"
+                      borderColor={'matador_border_color.100'}
+                      p="16px"
+                      cursor={'pointer'}
+                      onClick={method?.onClick}
+                      w="full"
+                      pt="15px"
+                      pb="21px"
+                      gap="17px"
+                    >
+                      {method?.icon}
+                      <Flex direction={'column'} gap="6px">
+                        <HStack spacing="10px" flexWrap={`wrap`}>
+                          <Text fontWeight={500} fontSize={'16px'} color="matador_text.100">
+                            {method?.title}
+                          </Text>
+                          {method?.tag && guidelines?.showConfirmationSpeedTag ? (
+                            <Tag
+                              bg={`custom_color.opacity_pop._20`}
+                              borderRadius={`full`}
+                              fontSize={`11px`}
+                              color={`custom_color.color_pop`}
+                              p={`4px 8px`}
+                              lineHeight={`140%`}
+                              letterSpacing={`0%`}
+                            >
+                              {method?.tag}
+                            </Tag>
+                          ) : null}
+                        </HStack>
+                        <Text fontWeight={500} color="matador_form.label" fontSize={'13px'}>
+                          {method?.desciption}{' '}
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  }
+                />
+              );
+            })}
           </VStack>
         </Box>
       )}
@@ -291,7 +343,16 @@ export const PaymentFlowContent = ({
             success={paymentMutation.isSuccess || depositMutation.isSuccess}
             trasferDetails={trasferDetails}
             setPaymentStep={setPaymentStep}
-            modal={modal}
+            purchaseType={purchaseType}
+            bankTransferType={bankTransferType}
+            asset_id={asset_id || unitData?.project?.id}
+            handleClose={
+              purchaseType === `direct_purchase`
+                ? handlePaymentFlowClose
+                : modal
+                ? modal?.onClose
+                : () => {}
+            }
           />
         </>
       ) : paymentStep === 'confirmCard' ? (

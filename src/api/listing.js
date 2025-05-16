@@ -41,6 +41,12 @@ export const fetchProjectsById = async id => {
   );
 };
 
+export const fetchProjectsByIdServerside = async (id, storeName) => {
+  return await axios.get(
+    `${BaseURL_ONE}/investment/project/${parseInt(id)}?store_name=${storeName}`
+  );
+};
+
 export const fetchFractionalInfo = async id => {
   return await axios.get(`${BaseURL_TWO}/developers/fractions/info/${parseInt(id)}`);
 };

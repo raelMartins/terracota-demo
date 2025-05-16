@@ -3,44 +3,32 @@ import {
   Flex,
   Center,
   Box,
-  ModalContent,
   Image,
   Text,
   useClipboard,
   useToast,
-  DrawerContent,
-  HStack,
   Icon,
+  Stack,
 } from '@chakra-ui/react';
-import {ArrowBackIcon, CloseIcon, CopyIcon} from '@chakra-ui/icons';
+import {CopyIcon} from '@chakra-ui/icons';
 import processingLoader from '../../images/processing-transaction.gif';
 import {calculateFee} from '../../utils/calculateFee';
-import isMobile from '../../utils/extras';
 import {Button} from '../../ui-lib';
 import {BsExclamationCircle} from 'react-icons/bs';
 import {FallBackBankTransfer} from './FallBackBankTransfer';
+import {InstantBankTransfer} from './InstantBankTransfer';
 
 export const BankAccountModal = ({
-  handleEndTransaction,
   loading,
   amount,
-  setPaymentStep,
   trasferDetails,
-  modal,
+  handleClose,
+  purchaseType,
+  bankTransferType,
+  asset_id,
 }) => {
   const toast = useToast();
   const {hasCopied, onCopy} = useClipboard(trasferDetails?.account_number);
-
-  const showToast = () => {
-    // toast({
-    //   title: 'Account Number Copied! 👍🏻',
-    //   status: 'info',
-    //   duration: 1500,
-    //   isClosable: true,
-    //   position: 'top-right',
-    // });
-    return <CopyIcon fontSize={'25'} color="custom_color.color" cursor="pointer" h={8} w={8} />;
-  };
 
   const copy = () => {
     onCopy();
@@ -74,7 +62,14 @@ export const BankAccountModal = ({
         </Center>
       ) : (
         <Box w="full">
-          {trasferDetails?.length ? (
+          {bankTransferType === `instant` ? (
+            <InstantBankTransfer
+              accounts={trasferDetails?.length ? trasferDetails : [trasferDetails]}
+              amount={amount}
+              handleClose={handleClose}
+              equityID={asset_id}
+            />
+          ) : trasferDetails?.length ? (
             <FallBackBankTransfer accounts={trasferDetails} amount={amount} />
           ) : (
             <>
@@ -114,27 +109,26 @@ export const BankAccountModal = ({
                 align="stretch"
                 gap="23px"
               >
-                <Box>
+                <Stack gap={`12px`}>
                   <Text
                     color="text"
                     fontSize={{base: '12px', md: '13px'}}
-                    fontWeight={500}
                     textAlign={'center'}
-                    mb="12px"
+                    lineHeight={`135%`}
+                    letterSpacing={`4%`}
                   >
-                    {
-                      'Kindly proceed with the payment to the provided account number , and please be aware that there is a fee associated with transfer.'
-                    }
+                    Kindly proceed with the payment to the provided account number , and please be
+                    aware that there is a fee associated with transfer.'
                   </Text>
                   <Text
                     color="text"
                     fontSize={{base: '12px', md: '13px'}}
-                    fontWeight={500}
+                    fontWeight={700}
                     textAlign={'center'}
                   >
-                    {trasferDetails?.account_name}
+                    Account Name: {trasferDetails?.account_name}
                   </Text>
-                </Box>
+                </Stack>
                 <Box>
                   <Flex
                     w="80%"
@@ -160,19 +154,15 @@ export const BankAccountModal = ({
                         {trasferDetails?.account_number}
                       </Text>
                     </Box>
-                    {
-                      // hasCopied ? (
-                      //   showToast(true)
-                      // ) :
-                      <CopyIcon
-                        onClick={copy}
-                        fontSize={'25'}
-                        color={hasCopied ? 'custom_color.color' : 'text'}
-                        cursor="pointer"
-                        h={8}
-                        w={8}
-                      />
-                    }
+
+                    <CopyIcon
+                      onClick={copy}
+                      fontSize={'25'}
+                      color={hasCopied ? 'custom_color.color' : 'text'}
+                      cursor="pointer"
+                      h={8}
+                      w={8}
+                    />
                   </Flex>
                 </Box>
                 <Flex gap="5px" w="full">
@@ -182,14 +172,16 @@ export const BankAccountModal = ({
                     fontWeight={400}
                     color="matador_text.500"
                   >
-                    While most transfers are processed almost immediately, please note that it may
+                    {purchaseType === `direct_purchase`
+                      ? `Kindly check your mail for an Expression of Interest (EOI) email to guide you on the next steps.`
+                      : `While most transfers are processed almost immediately, please note that it may
                     take longer in some cases. Be rest assured that we will notify you via email as
-                    soon as the transfer is complete.
+                    soon as the transfer is complete.`}
                   </Text>
                 </Flex>
               </Flex>
               <Button
-                onClick={modal.onClose}
+                onClick={handleClose}
                 color="custom_color.contrast"
                 w="full"
                 bg="custom_color.color"

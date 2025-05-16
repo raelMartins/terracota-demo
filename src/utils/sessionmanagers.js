@@ -47,3 +47,8 @@ export async function getSession(key) {
   const decrypted = await decrypt(session);
   return decrypted.info;
 }
+
+export async function getServersideCookie(cookie) {
+  const decrypted = await decrypt(cookie);
+  return decrypted.info;
+}

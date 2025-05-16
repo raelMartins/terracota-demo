@@ -38,8 +38,8 @@ export default function MyApp({Component, pageProps}) {
   const [storeDoesNotExist, setStoreDoesNotExist] = useState(false);
   const storeThemeInfo = objForLocalStorage?.storeThemeInfo;
   const companyImage = objForLocalStorage?.companyImage;
-  const primary_color = storeThemeInfo?.theme_color || '#FAB702';
-  const theme = storeThemeInfo?.theme_mode;
+  const primary_color = `#DDB057` || storeThemeInfo?.theme_color || '#FAB702';
+  const theme = `darkGreen` || storeThemeInfo?.theme_mode;
   const customColors = get_hex_color_complements(primary_color, theme);
 
   const CURRENT_THEME = currentTheme(theme);

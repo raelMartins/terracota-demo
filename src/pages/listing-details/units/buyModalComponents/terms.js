@@ -25,7 +25,7 @@ import isMobile from '../../../../utils/extras';
 import {ArrowBackIcon, CloseIcon} from '@chakra-ui/icons';
 import purchaseAgreement from '../../../../images/icons/purchase-agreement.svg';
 
-const PurchaseAgreementSVG = () => {
+export const PurchaseAgreementSVG = () => {
   const theme = useTheme();
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">

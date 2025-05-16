@@ -9,7 +9,11 @@ export {
   EditableInput,
   FormTextarea,
 } from './Input';
-
+export {
+  ResponsivePopup,
+  ResponsivePopupCloseButton,
+  ResponsivePopupContent,
+} from './ResponsiveDrawer';
 export {UploadDocument} from './UploadDocument';
 export {CustomisedTag} from './Tag';
 export {SelectMenu, RangeMenu, SliderMenu} from './Menu';

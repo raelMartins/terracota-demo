@@ -1,23 +1,16 @@
-import React from 'react';
 import {Box, Flex, Link, Stack, Text, useToast} from '@chakra-ui/react';
-import {Button, FormInput} from '../../../ui-lib/ui-lib.components';
-import {themeStyles} from '../../../theme';
-import {AttemptLogin, storeDetails} from '../../../api/auth';
+import {Button, FormInput} from '@/ui-lib';
+import {AttemptLogin, storeDetails} from '@/api/auth';
 import {useMutation, useQuery} from 'react-query';
-import {STORENAMEFROMDOMAIN, store_name} from '../../../constants/routes';
+import {store_name} from '@/constants/routes';
 import {useFormik} from 'formik';
-import useLocalStorage from '../../../utils/hooks/useLocalStorage';
 
-// const storeName = STORENAMEFROMDOMAIN;
-const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
+const GetStarted = ({setPage, setEmail, ...rest}) => {
   const toast = useToast();
   const STOREINFO = useQuery(['storeInfo'], storeDetails);
 
   const agentActive =
     STOREINFO?.data?.data?.data?.agent_active && STOREINFO?.data?.data?.data?.agent_status;
-
-  // const [storeName] = useLocalStorage('storeName');
-  // console.log({storeName});
 
   const validateForm = values => {
     const errors = {};
@@ -37,7 +30,6 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
       mutate({
         email: values?.email,
         store_name: store_name(),
-        // storeName,
       });
     },
     validateOnChange: true,
@@ -96,7 +88,8 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
     <Box
       maxW="440px"
       w={{base: `100%`, lg: `440px`}}
-      bg="card_bg"
+      bg="matador_background.200"
+      color={`text`}
       maxH={'358px'}
       px={{base: `24px`, md: '40px'}}
       py="32px"
@@ -115,17 +108,10 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
           textAlign={`center`}
           align={`center`}
         >
-          <Text
-            {...themeStyles.textStyles.sl5}
-            color="matador_text.500"
-            // mt="8px"
-            fontSize={{base: '13px', lg: '16px'}}
-            lineHeight={`140%`}
-          >
+          <Text color="matador_text.500" fontSize={{base: '13px', lg: '16px'}} lineHeight={`140%`}>
             Enter your email address
           </Text>
           <FormInput
-            // mt="24px"
             type="email"
             name="email"
             id="email"
@@ -141,12 +127,8 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
             height="100%"
             lineHeight="140%"
             bg={`matador_background.100`}
-            // border={`1px solid`}
-            // borderColor={`matador_text.400`}
-            // borderColor={`teal`}
           />
           <Button
-            // mt="24px"
             type="submit"
             color="custom_color.contrast"
             bg="custom_color.color"
@@ -154,9 +136,7 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
             fontSize={'18px'}
             onClick={formik.handleSubmit}
             isLoading={isLoading}
-            // border={`1px solid`}
             p="26px"
-            // borderColor={`text`}
           >
             <Text lineHeight={'28px'} fontWeight={'500'} fontSize={'18px'}>
               Proceed
@@ -168,18 +148,6 @@ const GetStarted = ({onAuthClose, setPage, setEmail, ...rest}) => {
             </Link>
           )}
         </Stack>
-        {/* <Text color='text' textAlign={'center'} fontSize={'16px'} mt='12px'>
-          Already have an account?{` `}
-          <Link as='span' color="custom_color.color">
-            Login
-          </Link>
-        </Text>
-        <Text color='text' textAlign={'center'} fontSize={'16px'} mt='12px'>
-          Are you an agent?{` `}
-          <Link as='span' color="custom_color.color">
-            Signup as an agent
-          </Link>
-        </Text> */}
       </Flex>
     </Box>
   );

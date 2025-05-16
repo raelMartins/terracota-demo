@@ -40,6 +40,9 @@ const ConfirmCard = ({
         return proceed();
       }
     },
+    onError: err => {
+      setPaymentStep('index');
+    },
   });
 
   const card_load_fetch = isLoading || savedCards?.data?.results?.length === 0;

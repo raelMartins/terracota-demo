@@ -1,5 +1,31 @@
 import {formatWithCommas} from './formatAmount';
 
+export const timeRelativeGreeting = name => {
+  let TIME_OF_DAY = '';
+  let time = new Date().getHours();
+
+  // if (time >= 5 && time < 12) {
+  if (time >= 0 && time < 12) {
+    TIME_OF_DAY = 'morning';
+  } else if (time >= 12 && time < 17) {
+    TIME_OF_DAY = 'afternoon';
+    // } else if (time >= 17 || time < 5) {
+  } else if (time >= 17) {
+    TIME_OF_DAY = 'evening';
+  }
+  return `Good ${TIME_OF_DAY}${name ? ` ${name?.trim()}` : ``}`;
+
+  return;
+};
+
+export const splitArrayIntoChunks = (array, chunkSize) => {
+  const result = [];
+  for (let i = 0; i < array?.length; i += chunkSize) {
+    result.push(array.slice(i, i + chunkSize));
+  }
+  return result;
+};
+
 export const randomBackgroundColor = () => {
   const colors = [
     '#2A2F36',

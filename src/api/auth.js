@@ -22,8 +22,17 @@ export const AttemptLogin = async data => {
   return await axios.post(`${BaseURL_TWO}/store/login/`, data);
 };
 
-export const registerUser = async data => {
-  return await axios.post(`${BaseURL_TWO}/store/customers/`, data);
+export const loginWithOTP = async data => {
+  const business_id = await getSession('businessId');
+
+  return await axios.post(`${BaseURL_TWO}/store/direct-purchase/`, {...data, business_id});
+};
+
+export const registerUser = async (data, passToken) => {
+  return await axios.post(
+    `${BaseURL_TWO}/store/customers/${passToken ? `?verify=true` : ``}`,
+    data
+  );
 };
 
 export const outreach = async data => {
@@ -42,4 +51,47 @@ export const agentLogin = async data => {
 
 export const agentAccount = async data => {
   return await axios.post(`${BaseURL_ONE}/user/agent-login`, data);
+};
+
+export const requestOTPforEmailVerification = async data => {
+  const business_id = await getSession('businessId');
+  return axios.post(`${BaseURL_ONE}/user/create_totp_email_extended`, {...data, business_id});
+};
+
+export const confirmEmailVerificationOTP = async data => {
+  const business_id = await getSession('businessId');
+
+  return axios.post(`${BaseURL_ONE}/user/verify_totp_email`, {...data, business_id});
+};
+
+export const requestOTPforPhoneVerification = async data => {
+  const business_id = await getSession('businessId');
+
+  return axios.post(`${BaseURL_ONE}/user/create_totp_phone_extended`, {
+    ...data,
+    'sign-up': true,
+    country: `Nigeria`,
+    business_id,
+  });
+};
+
+export const requestCallforOTPVerification = async data => {
+  const business_id = await getSession('businessId');
+
+  return axios.post(`${BaseURL_ONE}/user/voice_otp`, {
+    ...data,
+    'sign-up': true,
+    country: `Nigeria`,
+    business_id,
+  });
+};
+
+export const confirmPhoneVerificationOTP = async data => {
+  const business_id = await getSession('businessId');
+
+  return axios.post(`${BaseURL_ONE}/user/verify_totp_phone`, {...data, business_id});
+};
+
+export const resetPassword = async data => {
+  return await axios.post(`${BaseURL_ONE}/user/reset_password`, data);
 };
